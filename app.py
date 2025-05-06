@@ -3,8 +3,10 @@ import uuid
 from flask import Flask, jsonify, request, send_file
 from flask_cors import CORS
 
-from event import user_info, activity_info, login, create_user, delete_user, reset_password, create_activity, \
-    enroll_activity, update_activity, change_password, export_excel
+import event.activity
+import event.password
+import event.user
+from event import login, export_excel
 from utils import auth_token
 
 app = Flask(__name__)
@@ -19,7 +21,8 @@ def api_get_user_info():
         return jsonify({'code': 401, 'msg': 'Unauthorized', 'data': {}})
 
     if auth_token.auth(request.headers.get('Authorization').split('Bearer ')[1]):
-        api_get_user_info_response = jsonify(user_info.get_user_info(request.headers.get('Authorization').split('Bearer ')[1]))
+        api_get_user_info_response = jsonify(
+            event.user.get_user_info(request.headers.get('Authorization').split('Bearer ')[1]))
         return api_get_user_info_response
     else:
         return jsonify({'code': 401, 'msg': 'Unauthorized', 'data': {}})
@@ -34,7 +37,8 @@ def api_get_user_activities():
 
     if auth_token.auth(request.headers.get('Authorization').split('Bearer ')[1]):
         try:
-            api_get_user_activities_response = jsonify(activity_info.get_user_activity_info(request.headers.get('Authorization').split('Bearer ')[1]))
+            api_get_user_activities_response = jsonify(
+                event.activity.get_user_activity_info(request.headers.get('Authorization').split('Bearer ')[1]))
             return api_get_user_activities_response
         except Exception as e:
             import traceback
@@ -56,7 +60,7 @@ def api_delete_activity():
     if auth_token.auth(request.headers.get('Authorization').split('Bearer ')[1]):
         payload = request.get_json()
         try:
-            activity_info.delete_activity(payload)
+            event.activity.delete_activity(payload)
             return jsonify({'code': 200, 'msg': 'ok', 'data': {}})
         except Exception as e:
             api_delete_activity_response = jsonify({'code': 500, 'msg': str(e), 'data': {}})
@@ -74,7 +78,8 @@ def api_get_activities():
         return api_get_activities_response
 
     if auth_token.auth(request.headers.get('Authorization').split('Bearer ')[1]):
-        api_get_activities_response = jsonify(activity_info.get_activities_info(request.headers.get('Authorization').split('Bearer ')[1]))
+        api_get_activities_response = jsonify(
+            event.activity.get_activities_info(request.headers.get('Authorization').split('Bearer ')[1]))
         return api_get_activities_response
     else:
         api_get_activities_response = jsonify({'code': 401, 'msg': 'Unauthorized', 'data': {}})
@@ -112,12 +117,12 @@ def api_create_activity():
         return api_create_activity_response
 
     if not auth_token.admin_auth(request.headers.get('Authorization').split('Bearer ')[1]):
-        return jsonify({'code': 200, 'msg': 'ok', 'data': {}})
+        return jsonify({'code': 403, 'msg': 'Permission denied', 'data': {}})
 
     if auth_token.auth(request.headers.get('Authorization').split('Bearer ')[1]):
         payload = request.get_json()
         try:
-            create_activity.create(payload)
+            event.activity.create_activity(payload)
         except Exception as e:
             api_create_activity_response = jsonify({'code': 500, 'msg': str(e), 'data': {}})
             return api_create_activity_response
@@ -136,7 +141,7 @@ def api_upload():
         return api_upload_response
 
     if not auth_token.admin_auth(request.headers.get('Authorization').split('Bearer ')[1]):
-        return jsonify({'code': 200, 'msg': 'ok', 'data': {}})
+        return jsonify({'code': 403, 'msg': 'Permission denied', 'data': {}})
 
     if auth_token.auth(request.headers.get('Authorization').split('Bearer ')[1]):
         file = request.files['file']
@@ -160,7 +165,7 @@ def api_enroll_activity():
     if auth_token.auth(request.headers.get('Authorization').split('Bearer ')[1]):
         payload = request.get_json()
         try:
-            enroll_activity.enroll(payload, request.headers.get('Authorization').split('Bearer ')[1])
+            event.activity.enroll_activity(payload, request.headers.get('Authorization').split('Bearer ')[1])
             return jsonify({'code': 200, 'msg': 'ok', 'data': {}})
         except Exception as e:
             api_enroll_activity_response = jsonify({'code': 500, 'msg': str(e), 'data': {}})
@@ -178,10 +183,10 @@ def api_get_users():
         return api_get_users_response
 
     if not auth_token.admin_auth(request.headers.get('Authorization').split('Bearer ')[1]):
-        return jsonify({'code': 200, 'msg': 'ok', 'data': []})
+        return jsonify({'code': 403, 'msg': 'Permission denied', 'data': {}})
 
     if auth_token.auth(request.headers.get('Authorization').split('Bearer ')[1]):
-        api_get_users_response = jsonify(user_info.get_all_users())
+        api_get_users_response = jsonify(event.user.get_all_users())
         return api_get_users_response
     else:
         api_get_users_response = jsonify({'code': 401, 'msg': 'Unauthorized', 'data': {}})
@@ -196,12 +201,12 @@ def api_create_user():
         return api_create_user_response
 
     if not auth_token.admin_auth(request.headers.get('Authorization').split('Bearer ')[1]):
-        return jsonify({'code': 200, 'msg': 'ok', 'data': {}})
+        return jsonify({'code': 403, 'msg': 'Permission denied', 'data': {}})
 
     if auth_token.auth(request.headers.get('Authorization').split('Bearer ')[1]):
         payload = request.get_json()
         try:
-            create_user.add_user(payload)
+            event.user.add_user(payload)
         except Exception as e:
             api_create_user_response = jsonify({'code': 500, 'msg': str(e), 'data': {}})
             return api_create_user_response
@@ -220,12 +225,12 @@ def api_delete_user():
         return api_delete_user_response
 
     if not auth_token.admin_auth(request.headers.get('Authorization').split('Bearer ')[1]):
-        return jsonify({'code': 200, 'msg': 'ok', 'data': {}})
+        return jsonify({'code': 403, 'msg': 'Permission denied', 'data': {}})
 
     if auth_token.auth(request.headers.get('Authorization').split('Bearer ')[1]):
         payload = request.get_json()
         try:
-            delete_user.delete(payload)
+            event.user.delete_user(payload)
         except Exception as e:
             api_delete_user_response = jsonify({'code': 500, 'msg': str(e), 'data': {}})
             return api_delete_user_response
@@ -244,12 +249,12 @@ def api_reset_password():
         return api_reset_password_response
 
     if not auth_token.admin_auth(request.headers.get('Authorization').split('Bearer ')[1]):
-        return jsonify({'code': 200, 'msg': 'ok', 'data': {}})
+        return jsonify({'code': 403, 'msg': 'Permission denied', 'data': {}})
 
     if auth_token.auth(request.headers.get('Authorization').split('Bearer ')[1]):
         payload = request.get_json()
         try:
-            reset_password.reset(payload)
+            event.password.reset_password(payload)
         except Exception as e:
             api_reset_password_response = jsonify({'code': 500, 'msg': str(e), 'data': {}})
             return api_reset_password_response
@@ -270,7 +275,7 @@ def api_cancel_activity():
     if auth_token.auth(request.headers.get('Authorization').split('Bearer ')[1]):
         payload = request.get_json()
         try:
-            enroll_activity.cancel_enroll(payload, request.headers.get('Authorization').split('Bearer ')[1])
+            event.activity.cancel_enroll(payload, request.headers.get('Authorization').split('Bearer ')[1])
             return jsonify({'code': 200, 'msg': 'ok', 'data': {}})
         except Exception as e:
             api_cancel_activity_response = jsonify({'code': 500, 'msg': str(e), 'data': {}})
@@ -288,12 +293,12 @@ def api_update_activity():
         return api_update_activity_response
 
     if not auth_token.admin_auth(request.headers.get('Authorization').split('Bearer ')[1]):
-        return jsonify({'code': 200, 'msg': 'ok', 'data': {}})
+        return jsonify({'code': 403, 'msg': 'Permission denied', 'data': {}})
 
     if auth_token.auth(request.headers.get('Authorization').split('Bearer ')[1]):
         payload = request.get_json()
         try:
-            update_activity.update(payload)
+            event.activity.update(payload)
         except Exception as e:
             api_update_activity_response = jsonify({'code': 500, 'msg': str(e), 'data': {}})
             return api_update_activity_response
@@ -314,7 +319,7 @@ def api_change_password():
     if auth_token.auth(request.headers.get('Authorization').split('Bearer ')[1]):
         payload = request.get_json()
         try:
-            change_password.change(payload, request.headers.get('Authorization').split('Bearer ')[1])
+            event.password.change_password(payload, request.headers.get('Authorization').split('Bearer ')[1])
             return jsonify({'code': 200, 'msg': 'ok', 'data': {}})
         except Exception as e:
             api_change_password_response = jsonify({'code': 500, 'msg': str(e), 'data': {}})
@@ -332,7 +337,7 @@ def api_export():
         return api_export_response
 
     if not auth_token.admin_auth(request.headers.get('Authorization').split('Bearer ')[1]):
-        return jsonify({'code': 200, 'msg': 'ok', 'data': {}})
+        return jsonify({'code': 403, 'msg': 'Permission denied', 'data': {}})
 
     if auth_token.auth(request.headers.get('Authorization').split('Bearer ')[1]):
         try:
