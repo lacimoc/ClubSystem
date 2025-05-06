@@ -24,9 +24,8 @@
   pip install flask_cors
   pip install bcrypt
   pip install pandas
+  pip install openpyxl
   ```
-
-  
 
 - 开放对应的端口（或使用Nginx反向代理）
 
@@ -42,23 +41,26 @@
      pip install gunicorn
      ```
 
-     
-
   2. 启动Gunicorn服务器
 
      ``` bash
      gunicorn -w 4 app:app
      ```
-
-     
-
+  
 - 使用Python Flask开发环境
 
   1. 更改 **app.py** 中的 **port** 参数
   2. 启动 **app.py**
 
+### 如何导入用户数据
+
+- 创建列为 1.提交时间 2.学号 3.姓名 4.部门 5.提交者 6.管理员（1或0）的data.xlsx
+- 移动data.xlsx至db_input.py同级目录
+- 运行db_input.py
+
+
 # 计划完成的内容
 
 - [x] token校验失败后返回401
 - [x] 非admin用户在token检验失败后返回403而非200
-- [ ] 用户账户数据导入
+- [x] 用户账户数据导入
