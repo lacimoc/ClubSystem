@@ -275,7 +275,7 @@ def api_cancel_activity():
     if auth_token.auth(request.headers.get('Authorization').split('Bearer ')[1]):
         payload = request.get_json()
         try:
-            event.activity.cancel_enroll(payload, request.headers.get('Authorization').split('Bearer ')[1])
+            event.activity.cancel_enroll_activity(payload, request.headers.get('Authorization').split('Bearer ')[1])
             return jsonify({'code': 200, 'msg': 'ok', 'data': {}})
         except Exception as e:
             api_cancel_activity_response = jsonify({'code': 500, 'msg': str(e), 'data': {}})
@@ -298,7 +298,7 @@ def api_update_activity():
     if auth_token.auth(request.headers.get('Authorization').split('Bearer ')[1]):
         payload = request.get_json()
         try:
-            event.activity.update(payload)
+            event.activity.update_activity(payload)
         except Exception as e:
             api_update_activity_response = jsonify({'code': 500, 'msg': str(e), 'data': {}})
             return api_update_activity_response
