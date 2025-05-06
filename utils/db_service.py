@@ -113,7 +113,7 @@ class DBService(object):
             return None
         now_time = time.time()
         # 2025-05-02T00:00:00+08:00
-        if now_time < datetime.strptime(is_start[0], '%Y-%m-%dT%H:%M:%S%z').timestamp() or is_start[1] != 'upcoming':
+        if now_time < datetime.strptime(is_start[0][0], '%Y-%m-%dT%H:%M:%S%z').timestamp() or is_start[0][1] != 'upcoming':
             return None
 
         is_insert = self.conn.execute("SELECT * FROM signup WHERE user_id =? AND activity_id =?", (user_id, active_id)).fetchone()
