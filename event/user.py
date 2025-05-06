@@ -1,6 +1,25 @@
-from utils import template, db_service, auth_token
 import copy
 import datetime
+
+from utils import db_service, auth_token
+from settings import template
+
+
+def add_user(payload):
+    db = db_service.DBService()
+    username = payload['username']
+    name = payload['name']
+    password = payload['password']
+    department = int(payload['departmentId'][-1])
+    is_admin = payload['isAdmin']
+    db.create_user(department, username, password, name, is_admin)
+    return None
+
+
+def delete_user(payload):
+    db = db_service.DBService()
+    db.delete_user(int(payload['userId']))
+    return None
 
 
 def get_user_info(token) -> dict:

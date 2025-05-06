@@ -1,5 +1,7 @@
-from utils import template, db_service, auth_token
 import copy
+
+from utils import db_service, auth_token
+from settings import template
 
 
 def get_user_activity_info(token):
@@ -86,3 +88,58 @@ def get_activities_info(token):
             } for activity in activities[0] if activity[6] == activities[1][0]
         ]
     return response
+
+
+def create_activity(payload):
+    db = db_service.DBService()
+    capacity = int(payload['capacity'])
+    start_time = payload['startTime']
+    end_time = payload['endTime']
+    registration_time = payload['registration_time']
+    title = payload['title']
+    description = payload['description']
+    department = payload['department']
+    cover = payload['cover']
+    location = payload['location']
+    db.create_activity(capacity, 0, start_time, end_time, title, 'upcoming', description, department, cover, location, registration_time)
+    return None
+
+
+def enroll_activity(payload, token):
+    db = db_service.DBService()
+    active_id = payload['id']
+    users = auth_token.authed_users
+    for user in users:
+        if user[0] == token:
+            user_id = user[1]
+            break
+    db.enroll_activity(active_id, user_id)
+    return None
+
+
+def cancel_enroll_activity(payload, token):
+    db = db_service.DBService()
+    active_id = payload['activityId']
+    users = auth_token.authed_users
+    for user in users:
+        if user[0] == token:
+            user_id = user[1]
+            break
+    db.cancel_enroll_activity(active_id, user_id)
+    return None
+
+
+def update_activity(payload):
+    db = db_service.DBService()
+    capacity = int(payload['capacity'])
+    start_time = payload['startTime']
+    end_time = payload['endTime']
+    registration_time = payload['registration_time']
+    title = payload['title']
+    description = payload['description']
+    department = payload['department']
+    cover = payload['cover']
+    location = payload['location']
+    activity_id = payload['id']
+    db.update_activity(capacity, start_time, end_time, title, 'upcoming', description, department, cover, location, registration_time, activity_id)
+    return None

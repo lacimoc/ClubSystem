@@ -1,4 +1,5 @@
-from utils import auth_token, template
+from utils import auth_token
+from settings import template
 import copy
 
 

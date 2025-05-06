@@ -1,7 +1,13 @@
 from utils import db_service, auth_token
 
 
-def change(payload, token):
+def reset_password(payload):
+    db = db_service.DBService()
+    db.reset_password(int(payload['userId']))
+    return None
+
+
+def change_password(payload, token):
     db = db_service.DBService()
     user_id = None
     for user in auth_token.authed_users:
