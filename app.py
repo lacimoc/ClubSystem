@@ -57,6 +57,9 @@ def api_delete_activity():
         api_delete_activity_response = jsonify({'code': 401, 'msg': 'Unauthorized', 'data': {}})
         return api_delete_activity_response
 
+    if not auth_token.admin_auth(request.headers.get('Authorization').split('Bearer ')[1]):
+        return jsonify({'code': 403, 'msg': 'Permission denied', 'data': {}})
+
     if auth_token.auth(request.headers.get('Authorization').split('Bearer ')[1]):
         payload = request.get_json()
         try:
