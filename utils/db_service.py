@@ -76,7 +76,7 @@ class DBService(object):
 
     def get_all_users(self):
         # 联合查询users和role和groups表，获取所有用户信息
-        self.cur.execute("SELECT users.id, users.username, users.created_at, groups.id, role.is_admin, users.name FROM users INNER JOIN role ON users.id = role.user_id INNER JOIN groups ON role.group_id = groups.id")
+        self.cur.execute("SELECT users.id, users.username, users.created_at, groups.id, role.is_admin, users.name FROM users INNER JOIN role ON users.id = role.user_id INNER JOIN groups ON role.group_id = groups.id ORDER BY role.group_id, role.is_admin DESC")
         users = self.cur.fetchall()
         return users
 
