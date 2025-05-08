@@ -5,7 +5,12 @@ from utils import db_service, auth_token
 from settings import template
 
 
-def add_user(payload):
+def add_user(payload: dict) -> None:
+    """
+    通过表单添加用户
+    :param payload: 用户信息表单
+    :return: None
+    """
     db = db_service.DBService()
     username = payload['username']
     name = payload['name']
@@ -16,13 +21,23 @@ def add_user(payload):
     return None
 
 
-def delete_user(payload):
+def delete_user(payload: dict) -> None:
+    """
+    通过表单删除用户
+    :param payload: 用户信息表单
+    :return: None
+    """
     db = db_service.DBService()
     db.delete_user(int(payload['userId']))
     return None
 
 
-def get_user_info(token) -> dict:
+def get_user_info(token: str) -> dict:
+    """
+    通过token获取用户信息
+    :param token: 用户token
+    :return: 用户信息
+    """
     db = db_service.DBService()
     user_id = None
     for user in auth_token.authed_users:
@@ -32,7 +47,7 @@ def get_user_info(token) -> dict:
     if user_id is None:
         return copy.deepcopy(template.unauthorized_template)
 
-    user_info = db.get_user_info(user_id)
+    user_info = db.get_user_info(int(user_id))
 
     ret_dict = copy.deepcopy(template.response_template)
     is_admin = user_info[1] == 1
@@ -45,6 +60,10 @@ def get_user_info(token) -> dict:
 
 
 def get_all_users() -> dict:
+    """
+    获取所有用户信息
+    :return: 所有用户信息
+    """
     db = db_service.DBService()
     all_users = db.get_all_users()
     users = []

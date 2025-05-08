@@ -3,7 +3,12 @@ from settings import template
 import copy
 
 
-def login(payload: dict) -> None:
+def login(payload: dict) -> dict:
+    """
+    通过用户名和密码的表单登录，成功返回token，失败返回401错误模版
+    :param payload: 包含用户名和密码的表单
+    :return: 含有token的表单
+    """
     try:
         username = payload['username']
         password = payload['password']

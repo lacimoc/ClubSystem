@@ -5,8 +5,13 @@ import pandas as pd
 
 
 def export(activity_id: int) -> str:
+    """
+    从数据库中导出报名表为Excel文件
+    :param activity_id: 活动ID
+    :return: 文件位置
+    """
     db = db_service.DBService()
-    signup_data = db.get_signup_data(activity_id)
+    signup_data = db.get_signup_data(int(activity_id))
     if signup_data is None:
         return ''
     else:

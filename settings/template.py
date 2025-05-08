@@ -1,15 +1,18 @@
+# 标准响应模板
 response_template = {
     'code': 200,
     'msg': 'ok',
     'data': {}
 }
 
+# 未授权响应模板
 unauthorized_template = {
     'code': 401,
     'msg': 'Unauthorized',
     'data': {}
 }
 
+# 活动列表信息模板
 activity_template = {
     "total": 15,
     "current_page": 1,
@@ -29,6 +32,7 @@ activity_template = {
     ]
 }
 
+# 活动详情信息模板
 activity_detail_template = [
     {
         "id": "act_001",
